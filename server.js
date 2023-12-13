@@ -364,7 +364,7 @@ const updateRole = () => {
                         if (err) throw err;
 
                         console.log("successfully updated employee's role!");
-                        
+
                         startPrompt();
                     });
                 })
@@ -372,5 +372,62 @@ const updateRole = () => {
                     console.error(err);
                 });
         })
+    });
+}
+
+// function to view employee by their manager
+const viewEmployeeByManager = () => {
+
+    //get all the employee list 
+    db.query("SELECT * FROM EMPLOYEE", (err, res) => {
+        if (err) throw err;
+        const employeeChoice = [{
+            name: 'None',
+            value: 0
+        }];
+        res.forEach(({ first_name, last_name, id }) => {
+            employeeChoice.push({
+                name: first_name + " " + last_name,
+                value: id
+            });
+        });
+
+        let questions = [
+            {
+                type: "list",
+                name: "manager_id",
+                choices: employeeChoice,
+                message: "employee under whose manager you want see?"
+            },
+        ]
+
+        inquier.prompt(questions)
+            .then(response => {
+                let manager_id, query;
+                if (response.manager_id) {
+                    query = `SELECT employee.id AS id, employee.first_name AS first_name, employee.last_name AS last_name, role.title AS role, department.name AS department, CONCAT(M.first_name, " ", M.last_name) AS manager
+                    FROM employee
+                    LEFT JOIN role ON employee.role_id = role.id
+                    LEFT JOIN department ON role.department_id = department.id
+                    LEFT JOIN employee AS M ON employee.manager_id = M.id
+                    WHERE employee.manager_id = ?;`;
+                } else {
+                    manager_id = null;
+                    query = `SELECT employee.id AS id, employee.first_name AS first_name, employee.last_name AS last_name, role.title AS role, department.name AS department, CONCAT(M.first_name, " ", M.last_name) AS manager
+                    FROM employee
+                    LEFT JOIN role ON employee.role_id = role.id
+                    LEFT JOIN department ON role.department_id = department.id
+                    LEFT JOIN employee AS M ON employee.manager_id = M.id
+                    WHERE employee.manager_id is null;`;
+                }
+                db.query(query, [response.manager_id], (err, res) => {
+                    if (err) throw err;
+                    console.table(res);
+                    startPrompt();
+                });
+            })
+            .catch(err => {
+                console.error(err);
+            });
     });
 }
