@@ -116,7 +116,7 @@ const viewTables = (table) => {
     }
     db.query(query, (err, result) => {
         if (err) throw err;
-        console.table(result);        
+        console.table(result);
 
         startPrompt();
     });
@@ -136,11 +136,62 @@ const addNewDepartment = () => {
         const query = `INSERT INTO department (name) VALUES (?)`;
         db.query(query, [response.name], (err, res) => {
             if (err) throw err;
-            console.log(`Successfully added ${ response.name } department with id ${res.insertId}`);
+            console.log(`Successfully added ${response.name} department with id ${res.insertId}`);
 
             startPrompt();
         });
-    }) .catch(err => {
+    }).catch(err => {
         console.error(err);
+    });
+}
+
+// function to add new role
+const addNewRole = () => {
+    //get the list of all department with department_id to make the choices object list for prompt question
+    const departments = [];
+    db.query("SELECT * FROM DEPARTMENT", (err, res) => {
+        if (err) throw err;
+
+        res.forEach(dep => {
+            let colObj = {
+                name: dep.name,
+                value: dep.id
+            }
+            departments.push(colObj);
+        });
+
+        // question list to get arguments for making new roles
+        let questions = [
+            {
+                type: "input",
+                name: "title",
+                message: "what is the title of the new role?"
+            },
+            {
+                type: "input",
+                name: "salary",
+                message: "what is the salary of the new role?"
+            },
+            {
+                type: "list",
+                name: "department",
+                choices: departments,
+                message: "which department is this role in?"
+            }
+        ];
+
+        inquier.prompt(questions).then(response => {
+                const query = `INSERT INTO role (title, salary, department_id) VALUES (?)`;
+                db.query(query, [[response.title, response.salary, response.department]], (err, res) => {
+                    if (err) throw err;
+                    console.log(`Successfully added ${response.title} role with id ${res.insertId}`);
+
+                    startPrompt();
+                });
+            })
+            .catch(err => {
+                console.error(err);
+            });
+
     });
 }
