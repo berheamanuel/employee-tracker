@@ -121,3 +121,26 @@ const viewTables = (table) => {
         startPrompt();
     });
 };
+
+//  function to add new departement
+const addNewDepartment = () => {
+    let questions = [
+        {
+            type: "input",
+            name: "name",
+            message: "what is the new department name?"
+        }
+    ];
+
+    inquier.prompt(questions).then(response => {
+        const query = `INSERT INTO department (name) VALUES (?)`;
+        db.query(query, [response.name], (err, res) => {
+            if (err) throw err;
+            console.log(`Successfully added ${ response.name } department with id ${res.insertId}`);
+
+            startPrompt();
+        });
+    }) .catch(err => {
+        console.error(err);
+    });
+}
