@@ -403,7 +403,8 @@ const viewEmployeeByManager = () => {
 
         inquier.prompt(questions)
             .then(response => {
-                let manager_id, query;
+                let manager_id;
+                let query;
                 if (response.manager_id) {
                     query = `SELECT employee.id AS id, employee.first_name AS first_name, employee.last_name AS last_name, role.title AS role, department.name AS department, CONCAT(M.first_name, " ", M.last_name) AS manager
                     FROM employee
@@ -431,3 +432,70 @@ const viewEmployeeByManager = () => {
             });
     });
 }
+
+// function to update a manager
+const updateManager = () => {
+
+    //get all the employee list 
+    db.query("SELECT * FROM EMPLOYEE", (err, res) => {
+        if (err) throw err;
+        const employeeChoice = [];
+        res.forEach(({ first_name, last_name, id }) => {
+            employeeChoice.push({
+                name: first_name + " " + last_name,
+                value: id
+            });
+        });
+
+        //an employee could have no manager
+        const managerChoice = [{
+            name: 'None',
+            value: 0
+        }];
+
+        res.forEach(({ first_name, last_name, id }) => {
+            managerChoice.push({
+                name: first_name + " " + last_name,
+                value: id
+            });
+        });
+
+        let questions = [
+            {
+                type: "list",
+                name: "id",
+                choices: employeeChoice,
+                message: "whose manager do you want to update?"
+            },
+            {
+                type: "list",
+                name: "manager_id",
+                choices: managerChoice,
+                message: "whos is the employee's new manager?"
+            }
+        ];
+
+        inquier.prompt(questions)
+            .then(response => {
+                const query = `UPDATE EMPLOYEE SET ? WHERE id = ?;`;
+                let manager_id = response.manager_id !== 0 ? response.manager_id : null;
+                db.query(query, [
+                    { manager_id: manager_id },
+                    response.id
+                ], (err, res) => {
+                    if (err) throw err;
+
+                    console.log("successfully updated employee's manager");
+
+                    startPrompt();
+                });
+            })
+            .catch(err => {
+                console.error(err);
+            });
+    })
+
+};
+
+
+
