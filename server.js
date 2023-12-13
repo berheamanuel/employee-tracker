@@ -20,7 +20,7 @@ const db = mysql.createConnection(
 
 startPrompt();
 // function to prompt questions 
-function startPrompt () {
+function startPrompt() {
     const startQuestion = [{
         type: "list",
         name: "action",
@@ -48,13 +48,13 @@ function startPrompt () {
         .then(response => {
             switch (response.action) {
                 case "View all employees":
-                    viewAll("EMPLOYEE");
+                    viewTables("EMPLOYEE");
                     break;
                 case "View all roles":
-                    viewAll("ROLE");
+                    viewTables("ROLE");
                     break;
                 case "View all departments":
-                    viewAll("DEPARTMENT");
+                    viewTables("DEPARTMENT");
                     break;
                 case "add a department":
                     addNewDepartment();
@@ -95,3 +95,29 @@ function startPrompt () {
         });
 }
 
+// function to view tables based on user chooice
+const viewTables = (table) => {
+    // const query = `SELECT * FROM ${table}`;
+    let query;
+    if (table === "DEPARTMENT") {
+        query = `SELECT * FROM DEPARTMENT`;
+    } else if (table === "ROLE") {
+        query = `SELECT role.id AS id, title, salary, department.name AS department
+        FROM role 
+        LEFT JOIN department ON role.department_id = department.id`;
+    } else {//employee
+        query = `
+        SELECT employee.id AS id, employee.first_name AS first_name, employee.last_name AS last_name, role.title AS title, department.name AS department, role.salary AS salary, CONCAT(employee.first_name, " ", employee.last_name) AS manager
+        FROM employee 
+        LEFT JOIN role ON employee.role_id = role.id
+        LEFT JOIN department ON role.department_id = department.id
+        LEFT JOIN employee AS ma ON employee.manager_id = ma.id`;
+
+    }
+    db.query(query, (err, result) => {
+        if (err) throw err;
+        console.table(result);        
+
+        startPrompt();
+    });
+};
