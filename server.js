@@ -10,7 +10,7 @@ const db = mysql.createConnection(
         host: 'localhost',
         // MySQL username,
         user: 'root',
-        // TODO: Add MySQL password here
+        // MySQL password here
         password: 'wawa',
         database: 'employee_db'
     },
@@ -313,3 +313,64 @@ const viewBudget = () => {
     });
 
 };
+
+// function to update role of an employee
+const updateRole = () => {
+    //get all the employee list 
+    db.query("SELECT * FROM EMPLOYEE", (err, res) => {
+        if (err) throw err;
+        const employeeChoice = [];
+        res.forEach(({ first_name, last_name, id }) => {
+            employeeChoice.push({
+                name: first_name + " " + last_name,
+                value: id
+            });
+        });
+
+        //get all the role list to make choice of employee's role
+        db.query("SELECT * FROM ROLE", (err, rolRes) => {
+            if (err) throw err;
+            const roleChoice = [];
+            rolRes.forEach(({ title, id }) => {
+                roleChoice.push({
+                    name: title,
+                    value: id
+                });
+            });
+
+            let questions = [
+                {
+                    type: "list",
+                    name: "id",
+                    choices: employeeChoice,
+                    message: "whose role do you want to update?"
+                },
+                {
+                    type: "list",
+                    name: "role_id",
+                    choices: roleChoice,
+                    message: "what is the employee's new role?"
+                }
+            ]
+
+            inquier.prompt(questions)
+                .then(response => {
+                    const query = `UPDATE EMPLOYEE SET ? WHERE ?? = ?;`;
+                    db.query(query, [
+                        { role_id: response.role_id },
+                        "id",
+                        response.id
+                    ], (err, res) => {
+                        if (err) throw err;
+
+                        console.log("successfully updated employee's role!");
+                        
+                        startPrompt();
+                    });
+                })
+                .catch(err => {
+                    console.error(err);
+                });
+        })
+    });
+}
