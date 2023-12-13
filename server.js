@@ -208,7 +208,7 @@ const addNewEmployee = () => {
                 name: 'None',
                 value: 0
             }
-        ]; 
+        ];
 
         res.forEach(({ first_name, last_name, id }) => {
             employeeChoice.push({
@@ -260,7 +260,7 @@ const addNewEmployee = () => {
                     db.query(query, [[response.first_name, response.last_name, response.role_id, manager_id]], (err, res) => {
                         if (err) throw err;
                         console.log(`successfully inserted employee ${response.first_name} ${response.last_name} with id ${res.insertId}`);
-                        
+
                         startPrompt();
                     });
                 })
@@ -269,4 +269,47 @@ const addNewEmployee = () => {
                 });
         })
     });
-} 
+}
+
+// function to view total utilized budget of a department
+const viewBudget = () => {
+    db.query("SELECT * FROM DEPARTMENT", (err, res) => {
+        if (err) throw err;
+
+        const depChoice = [];
+        res.forEach(({ name, id }) => {
+            depChoice.push({
+                name: name,
+                value: id
+            });
+        });
+
+        let questions = [
+            {
+                type: "list",
+                name: "id",
+                choices: depChoice,
+                message: "which department's budget do you want to see?"
+            }
+        ];
+
+        inquier.prompt(questions)
+            .then(response => {
+                const query = `SELECT department.name, SUM(salary) AS budget 
+                FROM employee 
+                LEFT JOIN role ON employee.role_id = role.id
+                LEFT JOIN department ON role.department_id = department.id
+                WHERE department.id = ?`;
+                db.query(query, [response.id], (err, res) => {
+                    if (err) throw err;
+                    console.table(res);
+
+                    startPrompt();
+                });
+            })
+            .catch(err => {
+                console.error(err);
+            });
+    });
+
+};
