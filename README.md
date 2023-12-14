@@ -31,7 +31,9 @@ This command-line application used to view and interact with their employee info
 
 ## Demonstration
 
-* 
+* https://drive.google.com/file/d/1QXanPtcPC81DD1QfuUxqUI_2ARCq9LCq/view
+
+    ![QR Code](image.png)
 
 ## Installation
 
@@ -52,7 +54,7 @@ This command-line application used to view and interact with their employee info
 
 
 ## Referrence
-* Mysql class activity
+* MySQL class activity
 * https://stackoverflow.com/questions/3709560/joining-three-tables-using-mysql
 
 ## MIT License License

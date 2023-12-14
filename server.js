@@ -87,7 +87,7 @@ function startPrompt() {
                     viewBudget();
                     break;
                 default:
-                    connection.end();
+                    db.end();
             }
         })
         .catch(err => {
