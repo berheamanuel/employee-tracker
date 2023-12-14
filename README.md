@@ -1,5 +1,8 @@
 # Employee Tracker
 
+## Description
+This command-line application used to view and interact with their employee information
+
 ## User Story
 
 - AS A business owner
@@ -25,3 +28,31 @@
 * THEN I am prompted to enter the employee’s first name, last name, role, and manager, and that employee is added to the database
 * WHEN I choose to update an employee role
 * THEN I am prompted to select an employee to update and their new role and this information is updated in the database
+
+## Demonstration
+
+* 
+
+## Installation
+
+* Before attempting to use this project, make sure to have these programs installed on your computer: VS Code GitBash Node.js
+* Steps to initialize the project:
+1. Copy Link: Hit the "Code" button within this GitHub repo to copy link and clone localy
+2. Run npm i to install all dependencies
+3. Within the directory for this project, initialize prompts using the command "node server.js".
+
+## Technologies Used
+
+* MySQL
+* Node.js
+* Inquirer
+* JavaScript
+* Git Bash
+* VS Code
+
+
+## Referrence
+* Mysql class activity
+* https://stackoverflow.com/questions/3709560/joining-three-tables-using-mysql
+
+## MIT License License
