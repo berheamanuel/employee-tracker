@@ -497,5 +497,117 @@ const updateManager = () => {
 
 };
 
+// function to delete department
+const deleteDepartment = () => {
+    const departments = [];
+    db.query("SELECT * FROM DEPARTMENT", (err, res) => {
+        if (err) throw err;
+
+        res.forEach(dep => {
+            let depObj = {
+                name: dep.name,
+                value: dep.id
+            }
+            departments.push(depObj);
+        });
+
+        let questions = [
+            {
+                type: "list",
+                name: "id",
+                choices: departments,
+                message: "which department do u want to delete?"
+            }
+        ];
+
+        inquier.prompt(questions).then(response => {
+            const query = `DELETE FROM DEPARTMENT WHERE id = ?`;
+            db.query(query, [response.id], (err, res) => {
+                if (err) throw err;
+                console.log(`${res.affectedRows} row(s) successfully deleted!`);
+                startPrompt();
+            });
+        })
+            .catch(err => {
+                console.error(err);
+            });
+    });
+};
+
+
+// function to delete role of an employee
+const deleteRole = () => {
+    const departments = [];
+    db.query("SELECT * FROM ROLE", (err, res) => {
+        if (err) throw err;
+
+        const roleChoice = [];
+        res.forEach(({ title, id }) => {
+            roleChoice.push({
+                name: title,
+                value: id
+            });
+        });
+
+        let questions = [
+            {
+                type: "list",
+                name: "id",
+                choices: roleChoice,
+                message: "which role do u want to delete?"
+            }
+        ];
+
+        inquier.prompt(questions).then(response => {
+            const query = `DELETE FROM ROLE WHERE id = ?`;
+            db.query(query, [response.id], (err, res) => {
+                if (err) throw err;
+                console.log(`${res.affectedRows} row(s) successfully deleted!`);
+                startPrompt();
+            });
+        })
+            .catch(err => {
+                console.error(err);
+            });
+    });
+};
+
+
+// function to delete an employee
+const deleteEmployee = () => {
+    db.query("SELECT * FROM EMPLOYEE", (err, res) => {
+        if (err) throw err;
+
+        const employeeChoice = [];
+        res.forEach(({ first_name, last_name, id }) => {
+            employeeChoice.push({
+                name: first_name + " " + last_name,
+                value: id
+            });
+        });
+
+        let questions = [
+            {
+                type: "list",
+                name: "id",
+                choices: employeeChoice,
+                message: "which employee do u want to delete?"
+            }
+        ];
+
+        inquier.prompt(questions).then(response => {
+            const query = `DELETE FROM EMPLOYEE WHERE id = ?`;
+            db.query(query, [response.id], (err, res) => {
+                if (err) throw err;
+                console.log(`${res.affectedRows} row(s) successfully deleted!`);
+
+                startPrompt();
+            });
+        })
+            .catch(err => {
+                console.error(err);
+            });
+    });
+};
 
 
